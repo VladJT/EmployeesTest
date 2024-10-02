@@ -1,15 +1,14 @@
 package jt.projects.employeestest
 
-import android.content.Context
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
-
+import com.huawei.hms.api.HuaweiApiAvailability
 import jt.projects.employeestest.databinding.ActivityMainBinding
 import jt.projects.employeestest.domain.ClientViewModel
+
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -23,6 +22,8 @@ class MainActivity : AppCompatActivity() {
 
         viewModel = ViewModelProvider(this)[ClientViewModel::class.java]
         observeViewModel()
+
+        checkServices()
     }
 
     private fun observeViewModel() {
@@ -36,13 +37,19 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
-    fun isGmsAvailable(context: Context): Boolean {
-        return GoogleApiAvailability.getInstance()
-            .isGooglePlayServicesAvailable(context) == ConnectionResult.SUCCESS
+    private fun checkServices() {
+        println(isGmsAvailable().toString())
+        println(isHmsAvailable().toString())
     }
 
-    fun isHmsAvailable(context: Context): Boolean {
+
+    private fun isGmsAvailable(): Boolean {
+        return GoogleApiAvailability.getInstance()
+            .isGooglePlayServicesAvailable(applicationContext) == com.google.android.gms.common.ConnectionResult.SUCCESS
+    }
+
+    private fun isHmsAvailable(): Boolean {
         return HuaweiApiAvailability.getInstance()
-            .isHuaweiMobileServicesAvailable(context) == ConnectionResult.SUCCESS
+            .isHuaweiMobileServicesAvailable(applicationContext) == com.huawei.hms.api.ConnectionResult.SUCCESS
     }
 }

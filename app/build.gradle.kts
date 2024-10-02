@@ -115,7 +115,8 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+
     // Зависимости для HMS
     implementation (libs.base)
-    implementation (libs.location)
+    implementation ("com.huawei.hms:location:5.0.0.300")
 }

@@ -11,12 +11,53 @@
         android:id="@+id/client_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        tools:text="@string/app_name"
         android:textSize="24sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="@string/app_name" />
+
+    <TextView
+        android:id="@+id/Gms_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Gms:"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/client_name" />
+
+    <TextView
+        android:id="@+id/Gms_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="----"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="@+id/Gms_label"
+        app:layout_constraintStart_toEndOf="@+id/Gms_label"
+        app:layout_constraintTop_toTopOf="@+id/Gms_label" />
+
+    <TextView
+        android:id="@+id/Hms_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Hms:"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/Gms_label" />
+
+    <TextView
+        android:id="@+id/Hms_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="----"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="@+id/Hms_label"
+        app:layout_constraintStart_toEndOf="@+id/Hms_label"
+        app:layout_constraintTop_toTopOf="@+id/Hms_label" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
