@@ -118,7 +118,9 @@ dependencies {
 
     // Зависимости для HMS
     implementation (libs.base)
-    implementation ("com.huawei.hms:location:5.0.0.300")
+    implementation (libs.location)
 
-    implementation("com.google.android.gms:play-services-location:21.0.1")
+    implementation("com.google.android.gms:play-services-location:21.3.0")
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    implementation(libs.kotlinx.coroutines.core)
 }

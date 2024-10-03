@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">EmployeesTest</string>
+    <string name="error_location_not_found">error_location_not_found</string>
 </resources>

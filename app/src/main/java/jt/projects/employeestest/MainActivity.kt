@@ -1,6 +1,7 @@
 package jt.projects.employeestest
 
 import android.Manifest.permission.ACCESS_FINE_LOCATION
+import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
@@ -14,7 +15,8 @@ import com.huawei.hms.api.HuaweiApiAvailability
 import com.huawei.hms.location.LocationRequest
 import com.huawei.hms.location.LocationResult
 import jt.projects.employeestest.databinding.ActivityMainBinding
-import jt.projects.employeestest.domain.ClientViewModel
+import jt.projects.employeestest.domain.ClientIntent
+import jt.projects.employeestest.ui.ClientViewModel
 
 
 class MainActivity : AppCompatActivity() {
@@ -31,16 +33,27 @@ class MainActivity : AppCompatActivity() {
         viewModel = ViewModelProvider(this)[ClientViewModel::class.java]
         observeViewModel()
 
-        showCoordinates()
+        requestCurrentLocation()
     }
 
     private fun observeViewModel() {
         viewModel.state.observe(this, Observer { state ->
             state.clientModel?.let { client ->
-                with(binding.clientName) {
-                    text = client.clientName
-                    setTextColor(client.textColor)
-                }
+                binding.clientName.text = client.clientName
+                binding.clientName.setTextColor(client.textColor)
+            }
+
+            state.locationModel?.let { location ->
+                binding.location.text =
+                    "Latitude: ${location.latitude}\nLongitude: ${location.longitude}"
+            }
+
+            state.error?.let {
+                binding.location.text = it
+            }
+
+            if (state.isLoading) {
+                binding.location.text = "Loading..."
             }
         })
     }
@@ -55,28 +68,40 @@ class MainActivity : AppCompatActivity() {
             .isHuaweiMobileServicesAvailable(applicationContext) == com.huawei.hms.api.ConnectionResult.SUCCESS
     }
 
-    private fun showCoordinates() {
-        if (checkSelfPermission(ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            if (isGmsAvailable()) {
-                getGmsLocation()
-            } else if (isHmsAvailable()) {
-                getHmsLocation()
-            } else {
-                binding.location.text = "No location services available"
+    private fun requestCurrentLocation() {
+        when {
+            checkSelfPermission(ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED -> {
+                requestPermissions(arrayOf(ACCESS_FINE_LOCATION), LOCATION_PERMISSION_REQUEST_CODE)
             }
-        } else {
-            requestPermissions(arrayOf(ACCESS_FINE_LOCATION), LOCATION_PERMISSION_REQUEST_CODE)
+
+            isGmsAvailable() -> {
+                getGmsLocation()
+            }
+
+            isHmsAvailable() -> {
+                getHmsLocation()
+            }
+
+            else -> {
+                viewModel.handleIntent(ClientIntent.SetError(getString(R.string.error_location_not_found)))
+            }
         }
     }
 
+    @SuppressLint("MissingPermission")
     private fun getGmsLocation() {
         val fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
         val locationTask: Task<Location> = fusedLocationClient.lastLocation
         locationTask.addOnSuccessListener { location: Location? ->
             if (location != null) {
-                updateLocationText(location)
+                viewModel.handleIntent(
+                    ClientIntent.SetLocation(
+                        location.latitude,
+                        location.longitude
+                    )
+                )
             } else {
-                binding.location.text = "Location not found"
+                viewModel.handleIntent(ClientIntent.SetError(getString(R.string.error_location_not_found)))
             }
         }
     }
@@ -94,21 +119,20 @@ class MainActivity : AppCompatActivity() {
                 override fun onLocationResult(locationResult: LocationResult) {
                     val location = locationResult.lastLocation
                     if (location != null) {
-                        updateLocationText(location)
+                        viewModel.handleIntent(
+                            ClientIntent.SetLocation(
+                                location.latitude,
+                                location.longitude
+                            )
+                        )
                         fusedLocationClient.removeLocationUpdates(this)
                     } else {
-                        binding.location.text = "Location not found"
+                        viewModel.handleIntent(ClientIntent.SetError(getString(R.string.error_location_not_found)))
                     }
                 }
             },
             null
         )
-    }
-
-    private fun updateLocationText(location: Location) {
-        val latitude = location.latitude
-        val longitude = location.longitude
-        binding.location.text = "Latitude: $latitude\nLongitude: $longitude"
     }
 
     override fun onRequestPermissionsResult(
@@ -118,7 +142,7 @@ class MainActivity : AppCompatActivity() {
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == LOCATION_PERMISSION_REQUEST_CODE && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            showCoordinates()
+            requestCurrentLocation()
         }
     }
 

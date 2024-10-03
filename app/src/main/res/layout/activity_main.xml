@@ -25,12 +25,11 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:text="-"
-        android:textStyle="bold"
         android:textSize="18sp"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/client_name" />
-
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
